@@ -1,14 +1,4 @@
 <!DOCTYPE html>
-<html lang="en" >
-<head>
-  <meta charset="UTF-8">
-  <title>diary</title>
-  
-
-</head>
-<body>
-<!-- partial:index.partial.html -->
-<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -30,16 +20,21 @@
         .foto {
             flex: 1 1 20%;
             text-align: left;
+            cursor: pointer;
+            transition: flex 0.3s ease;
         }
         .foto img {
             width: 100%;
             display: block;
         }
         .pie {
-            font-size: 12px;
+            font-size: 16px;
             color: black;
             text-align: left;
             word-wrap: break-word;
+        }
+        .zoom {
+            flex: 2 1 40% !important;
         }
         @media (max-width: 768px) {
             .foto {
@@ -65,8 +60,8 @@
                 const respuesta = await fetch(`https://api.github.com/repos/${usuario}/${repositorio}/contents/${carpeta}`);
                 const archivos = await respuesta.json();
                 
-                // Filtrar solo imágenes JPG y ordenarlas por número en el nombre del archivo (de mayor a menor)
-                const imagenes = archivos.filter(archivo => archivo.name.endsWith(".jpg"))
+                // Filtrar solo imágenes JPG, JPEG y GIF, y ordenarlas por número en el nombre del archivo (de mayor a menor)
+                const imagenes = archivos.filter(archivo => archivo.name.match(/\.(jpg|jpeg|gif)$/i))
                     .sort((a, b) => {
                         const numA = parseInt(a.name.match(/^\d+/) || 0, 10);
                         const numB = parseInt(b.name.match(/^\d+/) || 0, 10);
@@ -81,8 +76,11 @@
                     div.classList.add("foto");
                     div.innerHTML = `
                         <img src="${imagen.download_url}" alt="${imagen.name}">
-                        <div class="pie">${imagen.name.replace(".jpg", "").replace(/-/g, " ")}</div>
+                        <div class="pie">${imagen.name.replace(/\.(jpg|jpeg|gif)/i, "").replace(/-/g, " ")}</div>
                     `;
+                    div.addEventListener("click", () => {
+                        div.classList.toggle("zoom");
+                    });
                     galeria.appendChild(div);
                 });
             } catch (error) {
@@ -93,9 +91,5 @@
         // Ejecutar función al cargar la página
         cargarImagenes();
     </script>
-</body>
-</html>
-<!-- partial -->
-  
 </body>
 </html>
